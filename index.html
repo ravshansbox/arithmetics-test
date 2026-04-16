@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Arithmetic Fun</title>
+    <style>
+      :root {
+        --bg1: #f8f9ff;
+        --bg2: #edf2ff;
+        --card: rgba(255, 255, 255, 0.96);
+        --text: #212741;
+        --muted: #6f7894;
+        --primary: #6c63ff;
+        --primary-strong: #5146ff;
+        --success: #27b36a;
+        --danger: #e85f5f;
+        --shadow: 0 12px 28px rgba(59, 70, 140, 0.14);
+        --radius: 22px;
+        --gap: 10px;
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(108, 99, 255, 0.18), transparent 35%),
+          radial-gradient(circle at top right, rgba(255, 197, 110, 0.24), transparent 30%),
+          linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
+        overflow: hidden;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      .app {
+        width: min(100%, 720px);
+        height: 100dvh;
+        margin: 0 auto;
+        padding:
+          max(10px, env(safe-area-inset-top))
+          10px
+          max(10px, env(safe-area-inset-bottom))
+          10px;
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: var(--gap);
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+      }
+
+      .top-card {
+        padding: 14px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .top-row {
+        display: flex;
+        align-items: start;
+        gap: 12px;
+      }
+
+      .title {
+        margin: 0;
+        font-size: 1.35rem;
+        line-height: 1.05;
+      }
+
+      .subtitle {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .badge {
+        align-self: start;
+        background: #f1eeff;
+        color: var(--primary-strong);
+        border-radius: 999px;
+        padding: 7px 11px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .stat {
+        background: #f6f8ff;
+        border-radius: 16px;
+        padding: 10px 8px;
+        text-align: center;
+      }
+
+      .stat-label {
+        display: block;
+        color: var(--muted);
+        font-size: 0.72rem;
+        margin-bottom: 2px;
+      }
+
+      .stat-value {
+        display: block;
+        font-size: 1rem;
+        font-weight: 800;
+      }
+
+      .settings-card {
+        padding: 12px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .setting-row {
+        display: grid;
+        gap: 6px;
+      }
+
+      .setting-label {
+        font-size: 0.84rem;
+        font-weight: 800;
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip {
+        border: 0;
+        border-radius: 999px;
+        background: #edf0ff;
+        color: var(--text);
+        min-width: 44px;
+        min-height: 40px;
+        padding: 0 14px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease;
+      }
+
+      .chip.active {
+        background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+        color: #fff;
+      }
+
+      .play-card {
+        min-height: 0;
+        padding: 12px;
+        display: grid;
+        grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+        gap: 10px;
+      }
+
+      .range-badge {
+        justify-self: center;
+        background: #fff4da;
+        color: #9f6d00;
+      }
+
+      .question {
+        margin: 0;
+        text-align: center;
+        font-size: clamp(1.8rem, 7vw, 3.2rem);
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+      }
+
+      .answer-display {
+        border-radius: 18px;
+        background: #f7f8ff;
+        border: 2px solid #e3e8ff;
+        min-height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        font-size: clamp(1.8rem, 7vw, 2.8rem);
+        font-weight: 800;
+      }
+
+      .answer-display.empty {
+        color: #a4acc7;
+      }
+
+      .feedback {
+        min-height: 20px;
+        text-align: center;
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      .pad-wrap {
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 8px;
+      }
+
+      .feedback.success {
+        color: var(--success);
+      }
+
+      .feedback.error {
+        color: var(--danger);
+      }
+
+      .numpad {
+        min-height: 0;
+        height: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(4, minmax(58px, 1fr));
+        gap: 8px;
+      }
+
+      .key,
+      .action-button {
+        border: 0;
+        border-radius: 18px;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 8px 18px rgba(76, 89, 161, 0.14);
+        transition: transform 0.12s ease, filter 0.12s ease;
+      }
+
+      .key {
+        min-height: 58px;
+        height: 100%;
+        font-size: 1.45rem;
+        background: #fff;
+        color: var(--text);
+      }
+
+      .key.special {
+        background: #eef2ff;
+        font-size: 0.96rem;
+      }
+
+      .action-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .action-button {
+        min-height: 50px;
+        font-size: 0.98rem;
+      }
+
+      .secondary {
+        background: #edf0ff;
+        color: var(--text);
+      }
+
+      .primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+        color: #fff;
+      }
+
+      .chip:active,
+      .key:active,
+      .action-button:active {
+        transform: scale(0.97);
+      }
+
+      .hint {
+        margin: -2px 0 0;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+
+      @media (min-width: 700px) {
+        .app {
+          padding: 16px;
+          gap: 12px;
+        }
+
+        .settings-card {
+          grid-template-columns: 1fr 1fr;
+          align-items: start;
+          gap: 14px;
+        }
+      }
+
+      @media (max-height: 760px) {
+        .top-card {
+          padding: 10px;
+          gap: 8px;
+        }
+
+        .title {
+          font-size: 1.15rem;
+        }
+
+        .subtitle {
+          display: none;
+        }
+
+        .badge {
+          padding: 6px 10px;
+          font-size: 0.76rem;
+        }
+
+        .stat {
+          padding: 7px 6px;
+        }
+
+        .stat-label {
+          font-size: 0.68rem;
+        }
+
+        .stat-value {
+          font-size: 0.92rem;
+        }
+
+        .settings-card,
+        .play-card {
+          padding: 10px;
+        }
+
+        .play-card {
+          gap: 8px;
+        }
+
+        .setting-row {
+          gap: 4px;
+        }
+
+        .setting-label {
+          font-size: 0.78rem;
+        }
+
+        .chip-row {
+          gap: 6px;
+        }
+
+        .chip {
+          min-height: 34px;
+          padding: 0 11px;
+        }
+
+        .question {
+          font-size: clamp(1.5rem, 5.5vw, 2.4rem);
+        }
+
+        .answer-display {
+          min-height: 46px;
+          font-size: clamp(1.4rem, 5.5vw, 2.2rem);
+        }
+
+        .numpad {
+          grid-template-rows: repeat(4, minmax(54px, 1fr));
+          gap: 7px;
+        }
+
+        .key {
+          min-height: 54px;
+          font-size: 1.2rem;
+        }
+
+        .action-button {
+          min-height: 44px;
+        }
+
+        .hint {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="card top-card">
+        <div class="top-row">
+          <div>
+            <h1 class="title">Arithmetic Fun</h1>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-label">Correct</span>
+            <span class="stat-value" id="correctCount">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Tried</span>
+            <span class="stat-value" id="totalCount">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Streak</span>
+            <span class="stat-value" id="streakCount">0 🔥</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card settings-card">
+        <div class="setting-row">
+          <div class="setting-label">Operations</div>
+          <div class="chip-row" id="operationChips">
+            <button class="chip active" data-op="+">+</button>
+            <button class="chip active" data-op="-">−</button>
+            <button class="chip" data-op="*">×</button>
+            <button class="chip" data-op="/">÷</button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">Digits per number</div>
+          <div class="chip-row" id="digitChips">
+            <button class="chip active" data-digits="1">1</button>
+            <button class="chip" data-digits="2">2</button>
+            <button class="chip" data-digits="3">3</button>
+            <button class="chip" data-digits="4">4</button>
+            <button class="chip" data-digits="5">5</button>
+            <button class="chip" data-digits="6">6</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card play-card">
+        <div class="badge range-badge" id="rangeBadge">Numbers 1 to 9</div>
+        <h2 class="question" id="questionText">3 + 4 = ?</h2>
+        <div class="answer-display empty" id="answerDisplay">Tap numbers</div>
+        <div class="pad-wrap">
+          <div class="feedback" id="feedback"></div>
+          <div class="numpad" id="numpad">
+            <button class="key" data-key="1">1</button>
+            <button class="key" data-key="2">2</button>
+            <button class="key" data-key="3">3</button>
+            <button class="key" data-key="4">4</button>
+            <button class="key" data-key="5">5</button>
+            <button class="key" data-key="6">6</button>
+            <button class="key" data-key="7">7</button>
+            <button class="key" data-key="8">8</button>
+            <button class="key" data-key="9">9</button>
+            <button class="key special" data-key="back">⌫</button>
+            <button class="key" data-key="0">0</button>
+            <button class="key special" data-key="clear">Clear</button>
+          </div>
+        </div>
+        <div>
+          <div class="action-row">
+            <button class="action-button secondary" id="skipButton">Next question</button>
+          </div>
+          <p class="hint">Answers check automatically. Keyboard: numbers, Backspace, Enter.</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const state = {
+        operations: new Set(["+", "-"]),
+        digits: 1,
+        input: "",
+        currentQuestion: null,
+        locked: false,
+        stats: {
+          correct: 0,
+          total: 0,
+          streak: 0,
+        },
+      };
+
+      let autoCheckTimer = null;
+      let nextQuestionTimer = null;
+
+      const symbols = {
+        "+": "+",
+        "-": "−",
+        "*": "×",
+        "/": "÷",
+      };
+
+      const STORAGE_KEY = "arithmetic-fun-settings";
+      const VALID_OPERATIONS = ["+", "-", "*", "/"];
+
+      const answerDisplay = document.getElementById("answerDisplay");
+      const feedback = document.getElementById("feedback");
+      const questionText = document.getElementById("questionText");
+      const correctCount = document.getElementById("correctCount");
+      const totalCount = document.getElementById("totalCount");
+      const streakCount = document.getElementById("streakCount");
+      const rangeBadge = document.getElementById("rangeBadge");
+      const operationChips = [...document.querySelectorAll("#operationChips .chip")];
+      const digitChips = [...document.querySelectorAll("#digitChips .chip")];
+
+      function loadSettings() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+
+          const saved = JSON.parse(raw);
+          const operations = Array.isArray(saved.operations)
+            ? saved.operations.filter((op) => VALID_OPERATIONS.includes(op))
+            : [];
+          const digits = Number(saved.digits);
+
+          if (operations.length) {
+            state.operations = new Set(operations);
+          }
+
+          if (Number.isInteger(digits) && digits >= 1 && digits <= 6) {
+            state.digits = digits;
+          }
+        } catch {
+          // Ignore bad saved data.
+        }
+      }
+
+      function saveSettings() {
+        try {
+          localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+              operations: [...state.operations],
+              digits: state.digits,
+            })
+          );
+        } catch {
+          // Ignore storage errors.
+        }
+      }
+
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function getMaxNumber() {
+        return Math.pow(10, state.digits) - 1;
+      }
+
+      function getNumberRangeLabel() {
+        return `Numbers 1 to ${getMaxNumber().toLocaleString()}`;
+      }
+
+      function pickOperation() {
+        const ops = [...state.operations];
+        return ops[randomInt(0, ops.length - 1)];
+      }
+
+      function makeQuestion() {
+        const op = pickOperation();
+        const max = getMaxNumber();
+        let a;
+        let b;
+        let answer;
+
+        if (op === "+") {
+          a = randomInt(1, max);
+          b = randomInt(1, max);
+          answer = a + b;
+        }
+
+        if (op === "-") {
+          a = randomInt(1, max);
+          b = randomInt(1, max);
+          if (b > a) [a, b] = [b, a];
+          answer = a - b;
+        }
+
+        if (op === "*") {
+          a = randomInt(1, max);
+          b = randomInt(1, max);
+          answer = a * b;
+        }
+
+        if (op === "/") {
+          b = randomInt(1, max);
+          const maxWholeAnswer = Math.max(1, Math.floor(max / b));
+          answer = randomInt(1, maxWholeAnswer);
+          a = b * answer;
+        }
+
+        return {
+          a,
+          b,
+          op,
+          answer,
+          label: `${a.toLocaleString()} ${symbols[op]} ${b.toLocaleString()} = ?`,
+        };
+      }
+
+      function renderStats() {
+        correctCount.textContent = state.stats.correct;
+        totalCount.textContent = state.stats.total;
+        streakCount.textContent = `${state.stats.streak} 🔥`;
+      }
+
+      function renderInput() {
+        if (!state.input) {
+          answerDisplay.textContent = "Tap numbers";
+          answerDisplay.classList.add("empty");
+          return;
+        }
+
+        answerDisplay.textContent = state.input;
+        answerDisplay.classList.remove("empty");
+      }
+
+      function renderSettings() {
+        operationChips.forEach((chip) => {
+          chip.classList.toggle("active", state.operations.has(chip.dataset.op));
+        });
+
+        digitChips.forEach((chip) => {
+          chip.classList.toggle("active", Number(chip.dataset.digits) === state.digits);
+        });
+
+        rangeBadge.textContent = getNumberRangeLabel();
+      }
+
+      function setFeedback(message = "", type = "") {
+        feedback.textContent = message;
+        feedback.className = `feedback ${type}`.trim();
+      }
+
+      function clearTimers() {
+        clearTimeout(autoCheckTimer);
+        clearTimeout(nextQuestionTimer);
+      }
+
+      function scheduleAutoCheck() {
+        clearTimeout(autoCheckTimer);
+        if (!state.input || state.locked) return;
+
+        autoCheckTimer = setTimeout(() => {
+          submitAnswer();
+        }, 500);
+      }
+
+      function newQuestion() {
+        clearTimers();
+        state.locked = false;
+        state.input = "";
+        state.currentQuestion = makeQuestion();
+        questionText.textContent = state.currentQuestion.label;
+        renderInput();
+        renderSettings();
+      }
+
+      function pushDigit(digit) {
+        if (state.locked) return;
+
+        if (state.input === "0") {
+          state.input = digit;
+        } else {
+          state.input += digit;
+        }
+        renderInput();
+        scheduleAutoCheck();
+      }
+
+      function backspace() {
+        if (state.locked) return;
+        clearTimeout(autoCheckTimer);
+        state.input = state.input.slice(0, -1);
+        renderInput();
+      }
+
+      function clearInput() {
+        if (state.locked) return;
+        clearTimeout(autoCheckTimer);
+        state.input = "";
+        renderInput();
+      }
+
+      function submitAnswer() {
+        clearTimeout(autoCheckTimer);
+        if (state.locked || !state.input.length) return;
+
+        const guessed = Number(state.input);
+        const correct = state.currentQuestion.answer;
+
+        if (guessed !== correct) {
+          setFeedback("");
+          return;
+        }
+
+        state.locked = true;
+        state.stats.total += 1;
+        state.stats.correct += 1;
+        state.stats.streak += 1;
+        renderStats();
+        setFeedback("Great job! ✅", "success");
+        nextQuestionTimer = setTimeout(() => {
+          setFeedback("");
+          newQuestion();
+        }, 700);
+      }
+
+      function toggleOperation(op) {
+        if (state.operations.has(op)) {
+          if (state.operations.size === 1) {
+            setFeedback("Keep at least one operation on.", "error");
+            return;
+          }
+          state.operations.delete(op);
+        } else {
+          state.operations.add(op);
+        }
+
+        saveSettings();
+        setFeedback("");
+        newQuestion();
+      }
+
+      function setDigits(value) {
+        state.digits = value;
+        saveSettings();
+        setFeedback("");
+        newQuestion();
+      }
+
+      document.getElementById("numpad").addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-key]");
+        if (!button) return;
+
+        const { key } = button.dataset;
+        setFeedback("");
+
+        if (key === "back") return backspace();
+        if (key === "clear") return clearInput();
+        pushDigit(key);
+      });
+
+      document.getElementById("skipButton").addEventListener("click", () => {
+        setFeedback("");
+        newQuestion();
+      });
+
+      operationChips.forEach((chip) => {
+        chip.addEventListener("click", () => toggleOperation(chip.dataset.op));
+      });
+
+      digitChips.forEach((chip) => {
+        chip.addEventListener("click", () => setDigits(Number(chip.dataset.digits)));
+      });
+
+      window.addEventListener("keydown", (event) => {
+        if (/^[0-9]$/.test(event.key)) {
+          setFeedback("");
+          pushDigit(event.key);
+          return;
+        }
+
+        if (event.key === "Backspace") backspace();
+        if (event.key === "Escape") clearInput();
+        if (event.key === "Enter") submitAnswer();
+      });
+
+      loadSettings();
+      renderStats();
+      renderSettings();
+      newQuestion();
+    </script>
+  </body>
+</html>
