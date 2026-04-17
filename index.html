@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Arithmetic Fun</title>
+    <title>Arithmetic Test</title>
     <style>
       :root {
         --bg1: #f8f9ff;
@@ -140,6 +140,12 @@
         gap: 6px;
       }
 
+      .setting-row-inline {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        gap: 10px;
+      }
+
       .setting-label {
         font-size: 0.84rem;
         font-weight: 800;
@@ -268,6 +274,23 @@
         gap: 8px;
       }
 
+      .inline-actions {
+        align-self: end;
+        display: flex;
+        gap: 8px;
+      }
+
+      .inline-actions .action-button {
+        min-width: 40px;
+        min-height: 40px;
+        width: 40px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+      }
+
       .action-button {
         min-height: 50px;
         font-size: 0.98rem;
@@ -306,6 +329,10 @@
           grid-template-columns: 1fr 1fr;
           align-items: start;
           gap: 14px;
+        }
+
+        .setting-row-inline {
+          grid-column: 1 / -1;
         }
       }
 
@@ -400,7 +427,7 @@
       <section class="card top-card">
         <div class="top-row">
           <div>
-            <h1 class="title">Arithmetic Fun</h1>
+            <h1 class="title">Arithmetic Test</h1>
           </div>
         </div>
 
@@ -421,13 +448,19 @@
       </section>
 
       <section class="card settings-card">
-        <div class="setting-row">
-          <div class="setting-label">Operations</div>
-          <div class="chip-row" id="operationChips">
-            <button class="chip active" data-op="+">+</button>
-            <button class="chip active" data-op="-">−</button>
-            <button class="chip" data-op="*">×</button>
-            <button class="chip" data-op="/">÷</button>
+        <div class="setting-row setting-row-inline">
+          <div>
+            <div class="setting-label">Operations</div>
+            <div class="chip-row" id="operationChips">
+              <button class="chip active" data-op="+">+</button>
+              <button class="chip active" data-op="-">−</button>
+              <button class="chip" data-op="*">×</button>
+              <button class="chip" data-op="/">÷</button>
+            </div>
+          </div>
+          <div class="inline-actions">
+            <button class="action-button secondary" id="showAnswerButton" aria-label="Show answer" title="Show answer">👁</button>
+            <button class="action-button secondary" id="skipButton" aria-label="Next question" title="Next question">→</button>
           </div>
         </div>
 
@@ -464,12 +497,6 @@
             <button class="key" data-key="0">0</button>
             <button class="key special" data-key="clear">Clear</button>
           </div>
-        </div>
-        <div>
-          <div class="action-row">
-            <button class="action-button secondary" id="skipButton">Next question</button>
-          </div>
-          <p class="hint">Answers check automatically. Keyboard: numbers, Backspace, Enter.</p>
         </div>
       </section>
     </main>
@@ -608,8 +635,8 @@
       }
 
       function renderStats() {
-        correctCount.textContent = state.stats.correct;
-        totalCount.textContent = state.stats.total;
+        correctCount.textContent = `${state.stats.correct} ✅`;
+        totalCount.textContent = `${state.stats.total} 🎯`;
         streakCount.textContent = `${state.stats.streak} 🔥`;
       }
 
@@ -748,6 +775,19 @@
         if (key === "back") return backspace();
         if (key === "clear") return clearInput();
         pushDigit(key);
+      });
+
+      document.getElementById("showAnswerButton").addEventListener("click", () => {
+        if (!state.currentQuestion) return;
+        clearTimers();
+        state.locked = true;
+        state.input = String(state.currentQuestion.answer);
+        renderInput();
+        setFeedback(`Answer: ${state.currentQuestion.answer}`, "success");
+        nextQuestionTimer = setTimeout(() => {
+          setFeedback("");
+          newQuestion();
+        }, 3000);
       });
 
       document.getElementById("skipButton").addEventListener("click", () => {
