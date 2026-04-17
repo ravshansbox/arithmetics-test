@@ -640,6 +640,10 @@
         streakCount.textContent = `${state.stats.streak} 🔥`;
       }
 
+      function formatAnswerDisplay(value) {
+        return Number(value).toLocaleString();
+      }
+
       function renderInput() {
         if (!state.input) {
           answerDisplay.textContent = "Tap numbers";
@@ -647,7 +651,7 @@
           return;
         }
 
-        answerDisplay.textContent = state.input;
+        answerDisplay.textContent = formatAnswerDisplay(state.input);
         answerDisplay.classList.remove("empty");
       }
 
