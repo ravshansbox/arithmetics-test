@@ -583,8 +583,12 @@
         return Math.pow(10, state.digits) - 1;
       }
 
+      function formatNumber(value) {
+        return Number(value).toLocaleString("en-US");
+      }
+
       function getNumberRangeLabel() {
-        return `Numbers 1 to ${getMaxNumber().toLocaleString()}`;
+        return `Numbers 1 to ${formatNumber(getMaxNumber())}`;
       }
 
       function pickOperation() {
@@ -630,7 +634,7 @@
           b,
           op,
           answer,
-          label: `${a.toLocaleString()} ${symbols[op]} ${b.toLocaleString()} = ?`,
+          label: `${formatNumber(a)} ${symbols[op]} ${formatNumber(b)} = ?`,
         };
       }
 
@@ -640,10 +644,6 @@
         streakCount.textContent = `${state.stats.streak} 🔥`;
       }
 
-      function formatAnswerDisplay(value) {
-        return Number(value).toLocaleString();
-      }
-
       function renderInput() {
         if (!state.input) {
           answerDisplay.textContent = "Tap numbers";
@@ -651,7 +651,7 @@
           return;
         }
 
-        answerDisplay.textContent = formatAnswerDisplay(state.input);
+        answerDisplay.textContent = formatNumber(state.input);
         answerDisplay.classList.remove("empty");
       }
 
@@ -787,7 +787,7 @@
         state.locked = true;
         state.input = String(state.currentQuestion.answer);
         renderInput();
-        setFeedback(`Answer: ${state.currentQuestion.answer}`, "success");
+        setFeedback(`Answer: ${formatNumber(state.currentQuestion.answer)}`, "success");
         nextQuestionTimer = setTimeout(() => {
           setFeedback("");
           newQuestion();
