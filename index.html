@@ -787,9 +787,8 @@
         state.locked = true;
         state.input = String(state.currentQuestion.answer);
         renderInput();
-        setFeedback(`Answer: ${formatNumber(state.currentQuestion.answer)}`, "success");
+        setFeedback("");
         nextQuestionTimer = setTimeout(() => {
-          setFeedback("");
           newQuestion();
         }, 3000);
       });
